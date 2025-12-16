@@ -1,0 +1,29 @@
+{
+  "name": "health-queue-project",
+  "version": "1.0.0",
+  "description": "A comprehensive healthcare queue management system",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "keywords": [
+    "healthcare",
+    "queue-management",
+    "mern-stack",
+    "real-time",
+    "socket.io",
+    "react",
+    "nodejs"
+  ],
+  "author": "HealthQueue Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

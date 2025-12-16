@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Viewer Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .document-link { display: inline-block; margin: 10px; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+        .document-link:hover { background: #0056b3; }
+        .download-link { background: #28a745; }
+        .download-link:hover { background: #1e7e34; }
+    </style>
+</head>
+<body>
+    <h1>Document Viewer Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Document Viewing</h2>
+        <p>Testing document viewing for verification ID: <strong>68b033affc44860bc34675ae</strong></p>
+        
+        <h3>Document 1 (Government ID)</h3>
+        <p>Document ID: <strong>68b03502fd5874f0f105cb39</strong></p>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb39" 
+           target="_blank" class="document-link">View Document</a>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb39/download" 
+           download class="document-link download-link">Download Document</a>
+        
+        <h3>Document 2 (Medical Degree)</h3>
+        <p>Document ID: <strong>68b03502fd5874f0f105cb3a</strong></p>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb3a" 
+           target="_blank" class="document-link">View Document</a>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb3a/download" 
+           download class="document-link download-link">Download Document</a>
+        
+        <h3>Document 3 (NMC License)</h3>
+        <p>Document ID: <strong>68b03502fd5874f0f105cb3b</strong></p>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb3b" 
+           target="_blank" class="document-link">View Document</a>
+        <a href="http://localhost:5000/api/doctor-verification/documents/68b033affc44860bc34675ae/68b03502fd5874f0f105cb3b/download" 
+           download class="document-link download-link">Download Document</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Direct File Access</h2>
+        <p>Testing direct access to uploaded files:</p>
+        <a href="http://localhost:5000/uploads/doctor-verification/governmentId-1756378370156-589381697.png" 
+           target="_blank" class="document-link">Direct File Access</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Make sure the backend server is running on port 5000</li>
+            <li>Click on "View Document" links to test document viewing</li>
+            <li>Click on "Download Document" links to test downloading</li>
+            <li>Check browser console for any errors</li>
+        </ol>
+    </div>
+</body>
+</html>
