@@ -42,7 +42,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Other middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: "https://health-queue-project-1.onrender.com"
+}));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
