@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Set up api defaults
+  // Attach token to axios
   useEffect(() => {
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Check if user is authenticated on app load
+  // Check authentication on load
   useEffect(() => {
     const checkAuth = async () => {
       if (token) {
@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
           const response = await api.get('/auth/profile');
           setUser(response.data.user);
         } catch (error) {
-          console.error('Auth check failed:', error);
           localStorage.removeItem('token');
           setToken(null);
         }
@@ -45,24 +44,23 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Login function
+  // LOGIN
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', {
+        email,
+        password
+      });
+
       const { token: newToken, user: userData } = response.data;
-      
+
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser(userData);
-      
-      // Check if doctor is unverified
-      if (userData.role === 'doctor' && !userData.isVerified) {
-        toast.success('Login successful! Your account is pending verification.');
-        return { success: true, user: userData, requiresVerification: true };
-      }
-      
+
       toast.success('Login successful!');
       return { success: true, user: userData };
+
     } catch (error) {
       const message = error.response?.data?.error || 'Login failed';
       toast.error(message);
@@ -70,20 +68,38 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register function
-  const register = async (userData) => {
+  // REGISTER
+  const register = async (formData) => {
     try {
-      const role = userData.role;
-      const endpoint = role === 'doctor' ? '/auth/register/doctor' : '/auth/register/patient';
-      const response = await api.post(endpoint, userData);
+      const role = formData.role || 'patient';
+      const endpoint =
+        role === 'doctor'
+          ? '/auth/register/doctor'
+          : '/auth/register/patient';
+
+      // ✅ CLEAN DATA (remove confirmPassword if present)
+      const cleanedData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        city: formData.city,
+        role: role
+      };
+
+      const response = await api.post(endpoint, cleanedData);
+
       const { token: newToken, user: newUser } = response.data;
-      
+
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser(newUser);
-      
-      toast.success(`${role === 'doctor' ? 'Doctor' : 'Patient'} registration successful!`);
+
+      toast.success(
+        `${role === 'doctor' ? 'Doctor' : 'Patient'} registration successful!`
+      );
+
       return { success: true, user: newUser };
+
     } catch (error) {
       const message = error.response?.data?.error || 'Registration failed';
       toast.error(message);
@@ -91,7 +107,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
@@ -99,7 +114,6 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
-  // Update profile function
   const updateProfile = async (updates) => {
     try {
       const response = await api.put('/auth/profile', updates);
@@ -113,7 +127,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Update user state (for real-time updates)
   const updateUser = (updates) => {
     setUser(prev => ({ ...prev, ...updates }));
   };
