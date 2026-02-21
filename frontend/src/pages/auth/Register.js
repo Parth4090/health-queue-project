@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -61,30 +60,100 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          <input name="name" placeholder="Full Name" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Full Name"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="email" type="email" placeholder="Email" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="phone" placeholder="Phone Number" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="city" placeholder="City" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="City"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="state" placeholder="State" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            placeholder="State"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="address" placeholder="Address" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Address"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="dateOfBirth" type="date" onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="dateOfBirth"
+            type="date"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+          />
 
-          <select name="gender" onChange={handleChange} className="w-full p-3 border rounded">
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+          >
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
 
-          <input name="password" type="password" placeholder="Password" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Password"
+            required
+            className="w-full p-3 border rounded"
+          />
 
-          <input name="confirmPassword" type="password" placeholder="Confirm Password" required onChange={handleChange} className="w-full p-3 border rounded" />
+          <input
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm Password"
+            required
+            className="w-full p-3 border rounded"
+          />
 
           <button
             type="submit"
