@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await api.get('/auth/profile');
+          const response = await api.get('/api/auth/profile');
           setUser(response.data.user);
         } catch (error) {
           localStorage.removeItem('token');
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // LOGIN
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/api/auth/login', {
         email,
         password
       });
@@ -62,7 +62,11 @@ export const AuthProvider = ({ children }) => {
       return { success: true, user: userData };
 
     } catch (error) {
-      const message = error.response?.data?.error || 'Login failed';
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'Login failed';
+
       toast.error(message);
       return { success: false, error: message };
     }
@@ -74,16 +78,19 @@ export const AuthProvider = ({ children }) => {
       const role = formData.role || 'patient';
       const endpoint =
         role === 'doctor'
-          ? '/auth/register/doctor'
-          : '/auth/register/patient';
+          ? '/api/auth/register/doctor'
+          : '/api/auth/register/patient';
 
-      // ✅ CLEAN DATA (remove confirmPassword if present)
       const cleanedData = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        phone: formData.phone,
         city: formData.city,
-        role: role
+        state: formData.state,
+        address: formData.address,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender
       };
 
       const response = await api.post(endpoint, cleanedData);
@@ -94,14 +101,15 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(newUser);
 
-      toast.success(
-        `${role === 'doctor' ? 'Doctor' : 'Patient'} registration successful!`
-      );
-
+      toast.success('Registration successful!');
       return { success: true, user: newUser };
 
     } catch (error) {
-      const message = error.response?.data?.error || 'Registration failed';
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'Registration failed';
+
       toast.error(message);
       return { success: false, error: message };
     }
@@ -116,12 +124,16 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (updates) => {
     try {
-      const response = await api.put('/auth/profile', updates);
+      const response = await api.put('/api/auth/profile', updates);
       setUser(response.data.user);
       toast.success('Profile updated successfully');
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.error || 'Profile update failed';
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'Profile update failed';
+
       toast.error(message);
       return { success: false, error: message };
     }
