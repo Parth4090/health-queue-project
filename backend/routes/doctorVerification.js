@@ -13,6 +13,37 @@ const Doctor = require('../models/Doctor');
 const DoctorVerification = require('../models/DoctorVerification');
 const NMCVerificationService = require('../services/nmcVerificationService');
 const RiskAssessmentService = require('../services/riskAssessmentService');
+const { auth, requireDoctor } = require('../middleware/auth');
+
+// Get current doctor's verification (for unverified dashboard - supports both auth token and temp token)
+router.get('/me', auth, requireDoctor, async (req, res) => {
+  try {
+    const verification = await DoctorVerification.findOne({ userId: req.user._id })
+      .select('status timeline documents createdAt updatedAt')
+      .lean();
+    if (!verification) {
+      return res.status(404).json({
+        message: 'No verification record found',
+        code: 'NOT_FOUND'
+      });
+    }
+    res.json({
+      verificationId: verification._id,
+      status: verification.status,
+      progress: verification.verificationProgress,
+      timeline: verification.timeline,
+      documentsCount: verification.documents?.length || 0,
+      lastUpdated: verification.updatedAt
+    });
+  } catch (error) {
+    console.error('Get verification error:', error);
+    res.status(500).json({
+      message: 'Failed to get verification',
+      code: 'SERVER_ERROR',
+      details: error.message
+    });
+  }
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -204,7 +235,7 @@ router.post('/register/step1', [
 
     await verification.save();
 
-    // Emit real-time events for new verification
+    // Emit real-time events so admin portal shows new verification immediately
     socketService.emitNewDoctor({
       userId: user._id,
       name: user.name,
@@ -217,6 +248,15 @@ router.post('/register/step1', [
       specialization: specialization,
       qualification: qualification,
       experience: experience,
+      createdAt: new Date()
+    });
+    socketService.emitDoctorVerificationRequest({
+      userId: user._id,
+      verificationId: verification._id,
+      name: user.name,
+      email: user.email,
+      status: verification.status,
+      specialization,
       createdAt: new Date()
     });
 

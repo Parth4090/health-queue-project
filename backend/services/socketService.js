@@ -205,8 +205,8 @@ class SocketService {
       action: action || 'status_updated'
     });
 
-    // Emit to specific doctor
-    this.io.to(`user-${userId}`).emit('verificationStatusChanged', {
+    // Emit to specific doctor (userId as string for room name)
+    this.io.to(`user-${String(userId)}`).emit('verificationStatusChanged', {
       type: 'verificationStatusChanged',
       timestamp: new Date(),
       data: verificationData,
@@ -233,8 +233,8 @@ class SocketService {
       data: doctorData
     });
 
-    // Emit to specific doctor
-    this.io.to(`user-${doctorData.userId}`).emit('doctorVerified', {
+    // Emit to specific doctor (userId as string for room name)
+    this.io.to(`user-${String(doctorData.userId)}`).emit('doctorVerified', {
       type: 'doctorVerified',
       timestamp: new Date(),
       data: doctorData
@@ -259,8 +259,8 @@ class SocketService {
       data: verificationData
     });
 
-    // Emit to specific doctor
-    this.io.to(`user-${verificationData.userId}`).emit('verificationRejected', {
+    // Emit to specific doctor (userId as string for room name)
+    this.io.to(`user-${String(verificationData.userId)}`).emit('verificationRejected', {
       type: 'verificationRejected',
       timestamp: new Date(),
       data: verificationData
@@ -278,8 +278,8 @@ class SocketService {
       data: verificationData
     });
 
-    // Emit to specific doctor
-    this.io.to(`user-${verificationData.userId}`).emit('verificationOnHold', {
+    // Emit to specific doctor (userId as string for room name)
+    this.io.to(`user-${String(verificationData.userId)}`).emit('verificationOnHold', {
       type: 'verificationOnHold',
       timestamp: new Date(),
       data: verificationData

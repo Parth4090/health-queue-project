@@ -20,10 +20,10 @@ const loginRateLimit = rateLimit({
   skipSuccessfulRequests: true
 });
 
-// Admin login
+// Admin login (username can be username or email)
 router.post('/login', [
-  body('username').trim().isLength({ min: 4, max: 20 }).withMessage('Username must be 4-20 characters'),
-  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  body('username').trim().notEmpty().withMessage('Username or email is required').isLength({ min: 2, max: 100 }).withMessage('Username or email must be 2-100 characters'),
+  body('password').notEmpty().withMessage('Password is required').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('twoFactorToken').optional().isString().withMessage('Invalid 2FA token')
 ], async (req, res) => {
   try {
@@ -36,10 +36,15 @@ router.post('/login', [
       });
     }
 
-    const { username, password, twoFactorToken } = req.body;
+    let { username, password, twoFactorToken } = req.body;
+    username = (username || '').trim();
+    password = (password || '').trim();
 
-    // Find admin by username or email
-    const admin = await Admin.findByCredentials(username, password);
+    // Find admin by username or email (normalize for email lookup)
+    const admin = await Admin.findByCredentials(
+      username.includes('@') ? username.toLowerCase() : username,
+      password
+    );
     
     if (!admin) {
       return res.status(401).json({

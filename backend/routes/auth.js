@@ -105,10 +105,10 @@ router.post('/register/doctor', [
   body('password').isLength({ min: 4 }).withMessage('Password must be at least 4 characters'),
   body('phone').isLength({ min: 10, max: 20 }).withMessage('Phone number must be between 10-20 characters'),
   body('city').trim().notEmpty().withMessage('City is required'),
-  body('state').trim().notEmpty().withMessage('State is required'),
-  body('address').trim().notEmpty().withMessage('Address is required'),
-  body('dateOfBirth').notEmpty().withMessage('Date of birth is required'),
-  body('gender').trim().notEmpty().withMessage('Gender is required')
+  body('state').optional().trim(),
+  body('address').optional().trim(),
+  body('dateOfBirth').optional(),
+  body('gender').optional().trim()
 ], async (req, res) => {
   try {
     // Check database connection
@@ -121,10 +121,18 @@ router.post('/register/doctor', [
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      const firstError = errors.array()[0];
+      const message = firstError.msg || 'Validation failed';
+      return res.status(400).json({ error: message, errors: errors.array() });
     }
 
     const { name, email, password, phone, city, state, address, dateOfBirth, gender } = req.body;
+
+    // Defaults for optional doctor registration fields
+    const stateVal = (state && state.trim()) || 'Not specified';
+    const addressVal = (address && address.trim()) || 'To be updated';
+    const dateOfBirthVal = dateOfBirth ? new Date(dateOfBirth) : new Date('1990-01-01');
+    const genderVal = (gender && ['male', 'female', 'other'].includes(gender)) ? gender : 'other';
 
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
@@ -139,10 +147,10 @@ router.post('/register/doctor', [
       password,
       phone,
       city,
-      state,
-      address,
-      dateOfBirth,
-      gender,
+      state: stateVal,
+      address: addressVal,
+      dateOfBirth: dateOfBirthVal,
+      gender: genderVal,
       role: 'doctor',
       isVerified: false, // Important: doctor is not verified yet
       isActive: true

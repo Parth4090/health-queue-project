@@ -42,6 +42,7 @@ const Register = () => {
     try {
       const result = await register(formData);
 
+
       if (result.success) {
         toast.success('Registration successful!');
         navigate('/patient/login');

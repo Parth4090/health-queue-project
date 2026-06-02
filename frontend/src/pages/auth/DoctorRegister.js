@@ -55,20 +55,22 @@ const DoctorRegister = () => {
     setLoading(true);
 
     try {
-      const result = await register(
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.role,
-        {
-          phone: formData.phone,
-          city: formData.city,
-          specialization: formData.specialization
-        }
-      );
+      const result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+        phone: formData.phone,
+        city: formData.city,
+        specialization: formData.specialization,
+        state: formData.state || 'Not specified',
+        address: formData.address || 'To be updated',
+        dateOfBirth: formData.dateOfBirth || new Date().toISOString().split('T')[0],
+        gender: formData.gender || 'other'
+      });
       
       if (result.success) {
-        toast.success('Registration successful! Please check your email for verification.');
+        toast.success('Registration successful! Please complete verification to activate your account.');
         navigate('/doctor/login');
       }
     } catch (error) {

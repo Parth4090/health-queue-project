@@ -12,6 +12,8 @@ const PatientRegister = () => {
     confirmPassword: '',
     phone: '',
     city: '',
+    state: '',
+    address: '',
     role: 'patient'
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -39,16 +41,16 @@ const PatientRegister = () => {
     setLoading(true);
 
     try {
-      const result = await register(
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.role,
-        {
-          phone: formData.phone,
-          city: formData.city
-        }
-      );
+      const result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        city: formData.city,
+        state: formData.state || 'N/A',
+        address: formData.address || 'N/A',
+        role: formData.role
+      });
       
       if (result.success) {
         toast.success('Registration successful! Please check your email for verification.');
@@ -200,6 +202,50 @@ const PatientRegister = () => {
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your city"
+                />
+              </div>
+            </div>
+
+            {/* State Field */}
+            <div>
+              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                State
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="state"
+                  name="state"
+                  type="text"
+                  required
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter your state"
+                />
+              </div>
+            </div>
+
+            {/* Address Field */}
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  required
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter your address"
                 />
               </div>
             </div>

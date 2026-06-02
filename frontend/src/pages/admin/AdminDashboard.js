@@ -47,62 +47,39 @@ const AdminDashboard = () => {
     setAdminData(JSON.parse(admin));
     fetchDashboardData();
 
-    // Listen for real-time refresh events
+    // Listen for real-time refresh events (from SocketContext)
     const handleRefresh = () => {
-      console.log('🔄 Refreshing admin dashboard...');
       fetchDashboardData();
     };
 
     window.addEventListener('refreshAdminDashboard', handleRefresh);
 
-    // Socket.IO real-time event listeners
+    // Socket.IO real-time event listeners – refetch so new verifications and status changes show immediately
     if (socket && isConnected) {
-      // Listen for new verification requests
-      socket.on('newDoctorVerification', (data) => {
-        console.log('📋 New doctor verification received:', data);
-        toast.success(`New verification request from: ${data.data.name}`, {
-          duration: 4000,
-          icon: '📋'
-        });
+      const onNewVerification = () => {
+        toast.success('New verification request received', { duration: 3000, icon: '📋' });
         fetchDashboardData();
-      });
+      };
+      const onUpdate = () => fetchDashboardData();
 
-      // Listen for verification status changes
-      socket.on('verificationStatusChanged', (data) => {
-        console.log('🔄 Verification status changed:', data);
-        toast.success(`Verification status updated: ${data.data.status}`, {
-          duration: 3000,
-          icon: '🔄'
-        });
-        fetchDashboardData();
-      });
-
-      // Listen for dashboard updates
-      socket.on('dashboardUpdate', (data) => {
-        console.log('📊 Dashboard update received:', data);
-        fetchDashboardData();
-      });
-
-      // Listen for admin actions
-      socket.on('adminAction', (data) => {
-        console.log('⚡ Admin action performed:', data);
-        fetchDashboardData();
-      });
+      socket.on('newDoctorVerification', onNewVerification);
+      socket.on('doctorVerificationRequest', onNewVerification);
+      socket.on('verificationStatusChanged', onUpdate);
+      socket.on('dashboardUpdate', onUpdate);
+      socket.on('adminAction', onUpdate);
     }
 
-    // Cleanup
     return () => {
       window.removeEventListener('refreshAdminDashboard', handleRefresh);
-      
-      // Cleanup Socket.IO listeners
       if (socket) {
         socket.off('newDoctorVerification');
+        socket.off('doctorVerificationRequest');
         socket.off('verificationStatusChanged');
         socket.off('dashboardUpdate');
         socket.off('adminAction');
       }
     };
-  }, [navigate]);
+  }, [navigate, socket, isConnected]);
 
   const fetchDashboardData = async () => {
     try {

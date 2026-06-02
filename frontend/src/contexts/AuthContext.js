@@ -81,35 +81,26 @@ export const AuthProvider = ({ children }) => {
           ? '/api/auth/register/doctor'
           : '/api/auth/register/patient';
 
-      const cleanedData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        city: formData.city,
-        state: formData.state,
-        address: formData.address,
-        dateOfBirth: formData.dateOfBirth,
-        gender: formData.gender
-      };
+      const response = await api.post(endpoint, formData);
 
-      const response = await api.post(endpoint, cleanedData);
+      const newToken = response.data.token || response.data.tempToken;
+      const newUser = response.data.user;
 
-      const { token: newToken, user: newUser } = response.data;
-
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
+      if (newToken) {
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+      }
       setUser(newUser);
 
-      toast.success('Registration successful!');
+      toast.success(`${role === 'doctor' ? 'Doctor' : 'Patient'} registration successful!`);
       return { success: true, user: newUser };
 
     } catch (error) {
       const message =
         error.response?.data?.error ||
         error.response?.data?.errors?.[0]?.msg ||
+        error.response?.data?.errors?.[0]?.message ||
         'Registration failed';
-
       toast.error(message);
       return { success: false, error: message };
     }

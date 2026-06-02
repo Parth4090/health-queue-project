@@ -32,7 +32,8 @@ app.use(cors({
 }));
 
 // ✅ ONLY JSON parser (IMPORTANT)
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve uploads
 app.use('/uploads', express.static('uploads'));
@@ -49,6 +50,7 @@ const doctorSearchRoutes = require('./routes/doctors');
 const adminAuthRoutes = require('./routes/adminAuth');
 const adminDashboardRoutes = require('./routes/adminDashboard');
 const doctorVerificationRoutes = require('./routes/doctorVerification');
+const Admin = require('./models/Admin');
 
 app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
@@ -77,9 +79,47 @@ app.use((err, req, res, next) => {
 });
 
 // ===== DATABASE =====
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => console.error('❌ MongoDB Error:', err));
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/health-queue';
+mongoose.connect(mongoUri)
+  .then(async () => {
+    console.log('✅ MongoDB Connected');
+    // Create default admin if no admin exists
+    try {
+      const adminCount = await Admin.countDocuments();
+      if (adminCount === 0) {
+        const admin = new Admin({
+          username: 'admin',
+          email: 'admin@healthqueue.com',
+          password: 'admin123456',
+          role: 'super_admin',
+          permissions: [
+            'manage_doctors',
+            'manage_patients',
+            'manage_queues',
+            'view_analytics',
+            'manage_admins',
+            'approve_registrations',
+            'suspend_accounts'
+          ],
+          profile: {
+            firstName: 'System',
+            lastName: 'Administrator',
+            phone: '+91-9876543210'
+          },
+          isActive: true
+        });
+        await admin.save();
+        console.log('✅ Default admin created. Login with username: admin, password: admin123456');
+      }
+    } catch (err) {
+      console.error('Could not create default admin:', err.message);
+    }
+  })
+  .catch(err => {
+    console.error('❌ MongoDB Connection error:', err);
+    console.error('⚠️  Server will continue but database operations will fail. Make sure MongoDB is running.');
+  });
+
 
 // ===== START SERVER =====
 const PORT = process.env.PORT || 5000;

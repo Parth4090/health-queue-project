@@ -47,6 +47,9 @@ const AdminLogin = () => {
         if (data.code === '2FA_REQUIRED') {
           setRequires2FA(true);
           toast.error('Two-factor authentication required');
+        } else if (data.code === 'VALIDATION_ERROR' && data.errors?.length) {
+          const firstError = data.errors[0];
+          toast.error(firstError.msg || firstError.message || data.message || 'Validation failed');
         } else {
           toast.error(data.message || 'Login failed');
         }
